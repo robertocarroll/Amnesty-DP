@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
@@ -9,7 +10,7 @@
 	<!-- Basic Page Needs
   ================================================== -->
 	<meta charset="utf-8">
-	<title>Death sentences and executions map 2007 to 2011 - Amnesty International</title>
+	<title>Death sentences and executions map 2007 to 2012 - Amnesty International</title>
 	<meta name="description" content="">
 	
 	<meta name="author" content="">
@@ -67,7 +68,7 @@
 				<a href="#" id="closeembed">&times;</a>
 				<p>Paste HTML to embed in website</p>
 			
-				<input type="text" name="action" value='<iframe width="556" height="576" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://robertocarroll.com/test/dev18/"></iframe>'> 			
+				<input type="text" name="action" value='<iframe width="556" height="576" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://files.amnesty.com/deathpenalty2012/map/en/"></iframe>'> 			
 		
 			</div> <!-- embed -->
 				
@@ -87,7 +88,7 @@
 				<li id="second"><span></span>Executed 1 - 9</li>
 				<li id="third"><span></span>Executed 10 - 99</li>
 				<li id="fourth"><span></span>Executed 100 - 999</li>
-				<li id="fifth"><span></span>Executed 1,000 &lt;</li>
+				<li id="fifth"><span></span>Executed 1,000 &#62;</li>
 				<li id="sixth"><span></span>No available data for this year</li>
 			</ul>
 			
@@ -99,13 +100,21 @@
 			
 			<div class="panel-container">
  
- 		<div id="video">
- 	
- 			<iframe width="556" height="407" src="http://www.youtube.com/embed/aQDy-Ai4bw4?rel=0" ></iframe> 
- 	
- 			<p><a id="select-button">Global death penalty data  » </a></p>
- 	
- 		</div><!-- video -->
+ 		<div id="year2012">  
+  
+  		<div id="map_canvas6" style="width:556px; height:450px"></div>
+  	
+  			<div class="moreinfo">
+			<ul>
+				<li><a href="https://www.google.com/fusiontables/DataSource?docid=18RFIank_k9xY-JDjAHItq5U3hlargPEKzJZNa0Q">Open spreadsheet</a></li>
+				<li><a href="#" class="triggerembed">+ Embed</a></li>
+				<li><a href="#" class="trigger">Key</a></li>
+			</ul>
+			<br style="clear:both"/>
+			
+			</div> <!-- more info -->
+  		
+  		</div><!-- year2011 -->
  
  		<div id="year2011">  
   
@@ -187,7 +196,7 @@
 		</div><!-- panel container -->
 
 	<ul class="etabs">
-  		<li class="tab"><a href="#video">Introduction</a></li><li class="tab"><a href="#year2011">2011</a></li><li class="tab"><a href="#year2010">2010</a></li><li class="tab"><a href="#year2009">2009</a></li><li class="tab"><a href="#year2008">2008</a></li><li class="tab"><a href="#year2007">2007</a></li>
+  		<li class="tab"><a href="#year2012">2012</a></li><li class="tab"><a href="#year2011">2011</a></li><li class="tab"><a href="#year2010">2010</a></li><li class="tab"><a href="#year2009">2009</a></li><li class="tab"><a href="#year2008">2008</a></li><li class="tab"><a href="#year2007">2007</a></li>
 	</ul>		
 			
 
@@ -228,11 +237,11 @@
         var myOptions = {
           center: latlng,
           zoom: 2,
+          minZoom: 2,
           mapTypeControl: false,
            streetViewControl: false,
-           panControl: false,
+           panControl: true,
            zoomControl: true,
-           minZoom: 2,
   			zoomControlOptions: {
     			style: google.maps.ZoomControlStyle.SMALL
 					  },
@@ -264,7 +273,12 @@
         
         var map5 = new google.maps.Map(document.getElementById("map_canvas5"),
                                    myOptions); 
-                                   
+        
+
+         // Set up the fifth map
+        
+        var map6 = new google.maps.Map(document.getElementById("map_canvas6"),
+                                   myOptions);                            
         
     	// Customise how it looks
         
@@ -303,8 +317,20 @@
            { visibility: "off" }
          ]
   
+  },
+
+  {
+    "featureType": "landscape",
+    "stylers": [
+      { "color": "#D7F0FF" }
+    ]
   }
+
+
+
 ];
+	
+	 var infoWindow = new google.maps.InfoWindow();
 
 	// Set the style for each map
 
@@ -313,6 +339,7 @@
 	map3.setOptions({styles: amnestyStyles});
 	map4.setOptions({styles: amnestyStyles});
 	map5.setOptions({styles: amnestyStyles});
+	map6.setOptions({styles: amnestyStyles});
 
 	// Add the fusion layer to map 1
 
@@ -344,7 +371,21 @@
 	layer5 = new google.maps.FusionTablesLayer(3238311, {
 	});
 	layer5.setMap(map5);  
-        
+
+	// Add the fusion layer to map 6 - new way of doing things with the encrypted tableID
+
+	var fusionTableId2012 = '18RFIank_k9xY-JDjAHItq5U3hlargPEKzJZNa0Q';
+
+	var layer6 = new google.maps.FusionTablesLayer({ 
+		  query: { 
+		    from: fusionTableId2012 
+		  }, 
+		  styleId: 2,
+		  templateId: 2 
+
+		}); 
+
+	layer6.setMap(map6);     
         
     
     // Stuff to overcome the fact Google Maps doesn't like being loaded into a none;
@@ -445,7 +486,27 @@
 
     });
 });
-        
+      
+
+	  var googleMapsInit6 = false;
+	
+	$(document).ready(function(){
+  
+ 	 $('#tab-container')
+    .easytabs()
+    .bind('easytabs:after', function(evt, tab, panel) {
+     
+     if ( panel.is('#year2012') && !googleMapsInit6) {
+    			
+             	google.maps.event.trigger(map6, 'resize');
+        		map6.setCenter(latlng);
+             googleMapsInit6 = true;        
+     }
+     
+
+    });
+});
+
         
         
       }
@@ -465,6 +526,7 @@
  
  
  	  <script type="text/javascript">
+
       
       var popUpOpen = false;
       var popUpOpenEmbed = false;
@@ -549,8 +611,6 @@
              	popUpOpen = false;
      }
      
-     
-    
 
     });
 });
@@ -559,14 +619,7 @@
       
     </script>
  	 
- 	 <script type="text/javascript">
-		$('#select-button').click( function() {
-			$('#tab-container').easytabs('select', '#year2011');
-		});
-	</script>
- 	 
-	<!-- Optimized Google Analytics. Change UA-XXXXX-X to your site ID -->
-	<script>var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.src='//www.google-analytics.com/ga.js';s.parentNode.insertBefore(g,s)}(document,'script'))</script>
+
 
 
 <!-- End Document
